@@ -1,0 +1,95 @@
+<h1>Employees List</h1>
+
+<ul>
+  {{#each table}}
+  <li>
+    <p>
+      {{this.id}}. {{this.first_name}} {{this.last_name}} {{this.manager_id}} {{this.role_id}}
+
+      <button data-tableid="{{this.id}}" class="del-table">Delete Employee!</button>
+    </p>
+  </li>
+  {{/each}}
+</ul>
+
+<h2>Insert Employees</h2>
+<form id="create-table" class="button-size">
+  <textarea type="text" name="table"></textarea>
+  <button type="submit">Save New Employee!</button>
+</form>
+
+<h2>Update an Employee</h2>
+<form id="update-table" class="button-size">
+  <select name="id">
+		{{#each table}}
+			<option value="{{this.id}}">{{this.first_name}} {{this.last_name}}</option>
+		{{/each}}
+	</select>
+  <textarea type="text" name="table" placeholder="table"></textarea>
+  <button type="submit">Update Employee!</button>
+</form>
+
+<script type="text/javascript">
+  $(".del-table").on("click", function(event) {
+    // Get the ID from the button.
+    // This is shorthand for $(this).attr("data-planid")
+    var id = $(this).data("tableid");
+
+    // Send the DELETE request.
+    $.ajax("/api/table/" + id, {
+      type: "DELETE"
+    }).then(
+      function() {
+        console.log("deleted id ", id);
+        // Reload the page to get the updated list
+        location.reload();
+      }
+    );
+  });
+
+  $("#create-table").on("submit", function(event) {
+    // Make sure to preventDefault on a submit event.
+    event.preventDefault();
+
+    // [name=plan] will find an element with a "name" attribute equal to the string "plan"
+    var newTable = {
+      table: $("#create-table [name=table]").val().trim()
+    };
+
+    // Send the POST request.
+    $.ajax("/api/table", {
+      type: "POST",
+      data: newPlan
+    }).then(
+      function() {
+        console.log("created new employee");
+        // Reload the page to get the updated list
+        location.reload();
+      }
+    );
+  });
+
+  $("#update-table").on("submit", function(event) {
+    // Make sure to preventDefault on a submit event.
+    event.preventDefault();
+
+    // Get the ID by finding an element with a "name" attribute equal to the string "id"
+    var id = $("[name=id]").val().trim();
+
+    var updatedPlan = {
+      plan: $("#update-table [name=table]").val().trim()
+    };
+
+    // Send the PUT request.
+    $.ajax("/api/table/" + id, {
+      type: "PUT",
+      data: updatedTable
+    }).then(
+      function() {
+        console.log("updated id ", id);
+        // Reload the page to get the updated list
+        location.reload();
+      }
+    );
+  });
+</script>
